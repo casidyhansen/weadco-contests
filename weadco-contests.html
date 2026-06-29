@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeadCo — Carrier Contests</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  /* ============================================================
+     WEADCO CARRIER CONTEST BOARD
+     
+     TO UPDATE CONTEST DATA:
+     Scroll down to the section marked "CONTEST DATA — EDIT HERE"
+  ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brown:       #3B2A1A;
+    --gold:        #C9973A;
+    --gold-light:  #FAC775;
+    --gold-pale:   #FDF3E0;
+    --cream:       #FAF7F2;
+    --border:      #E8E0D4;
+    --text:        #1C1612;
+    --text-muted:  #7A6A58;
+    --text-light:  #A89880;
+    --surface:     #FFFFFF;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--cream); color: var(--text); }
+
+  .header { background: var(--brown); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .brand-mark { width: 36px; height: 36px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: var(--brown); flex-shrink: 0; }
+  .header-title { font-size: 15px; font-weight: 600; color: #fff; }
+  .header-sub { font-size: 12px; color: var(--gold-light); margin-top: 1px; }
+  .last-updated { font-size: 11px; color: #A89070; }
+
+  .toolbar { padding: 1rem 1.5rem 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn { font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .filter-btn:hover { border-color: var(--brown); color: var(--brown); }
+  .filter-btn.active { background: var(--brown); color: var(--gold-light); border-color: var(--brown); }
+  .count { font-size: 12px; color: var(--text-light); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; padding: 1rem 1.5rem 2rem; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.125rem; display: flex; flex-direction: column; gap: 10px; }
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .carrier { font-size: 15px; font-weight: 600; color: var(--text); }
+
+  .pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; font-weight: 500; }
+  .pill-active   { background: #EAF3DE; color: #27500A; }
+  .pill-ending   { background: #FAEEDA; color: #633806; }
+  .pill-upcoming { background: #E6F1FB; color: #0C447C; }
+
+  .prize-box { background: var(--gold-pale); border: 1px solid #EDD9A8; border-radius: 8px; padding: 9px 12px; }
+  .prize-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); font-weight: 600; margin-bottom: 3px; }
+  .prize-value { font-size: 14px; font-weight: 600; color: var(--brown); }
+
+  .meta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .meta-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
+  .meta-item i { font-size: 14px; color: var(--text-light); }
+
+  .lob-box { display: flex; align-items: flex-start; gap: 6px; }
+  .lob-label { font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; padding-top: 1px; }
+  .lob-value { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  .divider { height: 1px; background: var(--border); }
+
+  .details-block { display: flex; flex-direction: column; gap: 4px; }
+  .details-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-light); font-weight: 600; }
+  .details-text { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+  .details-text.clamped { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .expand-btn { font-size: 12px; color: var(--gold); background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; }
+  .expand-btn:hover { color: var(--brown); }
+
+  .empty { grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand-mark">W</div>
+    <div>
+      <div class="header-title">WeadCo Insurance — Carrier Contests</div>
+      <div class="header-sub">Brand your assets. Win some too.</div>
+    </div>
+  </div>
+  <div class="last-updated" id="last-updated-display"></div>
+</div>
+
+<div class="toolbar">
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="active">Active</button>
+    <button class="filter-btn" data-filter="ending">Ending soon</button>
+    <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+  </div>
+  <span class="count" id="count-label"></span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+/* ================================================================
+   CONTEST DATA — EDIT HERE
+
+   status options:
+     "active"   = running, not close to deadline
+     "ending"   = deadline within ~2 weeks
+     "upcoming" = not started yet
+
+   dates: use "Mon DD, YYYY" format, e.g. "Jul 31, 2026"
+================================================================ */
+
+const LAST_UPDATED = "June 29, 2026";
+
+const contests = [
+  {
+    carrier:  "Liberty Mutual",
+    status:   "active",
+    prize:    "$50 commission bonus per BOP",
+    lob:      "Newly issued BOP",
+    start:    "May 1, 2026",
+    end:      "Jul 31, 2026",
+    details:  "Earn a commission bonus token worth $50 for each newly issued BOP written between May 1 – July 31."
+  },
+  {
+    carrier:  "BTIS",
+    status:   "active",
+    prize:    "2 tickets + hotel — Foo Fighters in Vegas",
+    lob:      "General Liability, Workers' Comp, Bonds, BOP",
+    start:    "Mar 1, 2026",
+    end:      "Aug 1, 2026",
+    details:  "Top Producer in each product line wins 2 tickets plus hotel to see Foo Fighters live in Las Vegas."
+  },
+  {
+    carrier:  "Tower Hill",
+    status:   "active",
+    prize:    "Disney World trip, Spa package, or Amazon gift cards",
+    lob:      "Dwelling / Mobile Home",
+    start:    "Dec 15, 2025",
+    end:      "Dec 31, 2026",
+    details:  "Reach 20, 30, or 50 Dwelling or Mobile Home policies to be entered into raffles for a Disney World trip, a Spa Gift Package, or Amazon Gift Cards."
+  },
+  {
+    carrier:  "Jewelers Mutual",
+    status:   "ending",
+    prize:    "Exclusive jewelry prizes",
+    lob:      "Jewelry policy (min. $200 annual premium)",
+    start:    "Jun 1, 2026",
+    end:      "Jul 31, 2026",
+    details:  "Every 2 qualifying jewelry policies earns 1 entry toward exclusive jewelry prizes. Minimum annual premium of $200 per policy."
+  },
+  {
+    carrier:  "GEICO",
+    status:   "ending",
+    prize:    "$50 per eligible policy",
+    lob:      "Business Auto and Contractor Program",
+    start:    "Jun 18, 2026",
+    end:      "Jul 17, 2026",
+    details:  "Earn $50 for every eligible GEICO Business Auto policy you sell during the contest window."
+  },
+  {
+    carrier:  "Liberty Mutual",
+    status:   "ending",
+    prize:    "Ray-Ban shopping spree",
+    lob:      "All lines — Small Commercial, Farm & Ranch, Inland Marine",
+    start:    "Jul 1, 2026",
+    end:      "Jul 31, 2026",
+    details:  "The agency with the greatest % increase in Year-Over-Year Policies in Force (PIF) wins. All lines count — renewals and new business both included. It's not about who's biggest, it's about who grows the most."
+  },
+  {
+    carrier:  "Liberty Mutual",
+    status:   "active",
+    prize:    "Cowboys vs. 49ers tickets — AT&T Stadium",
+    lob:      "All Commercial Lines written in eCLIQ",
+    start:    "Jul 1, 2026",
+    end:      "Sep 30, 2026",
+    details:  "The agency with the most written premium in new business wins a seat to Cowboys vs. 49ers at AT&T Stadium, Dallas, TX. Sunday, November 15, 2026 at 3:25 PM."
+  },
+  {
+    carrier:  "RT Specialty",
+    status:   "ending",
+    prize:    "17.5% commission rate",
+    lob:      "Select new Workers' Compensation via EMPLOYERS® on RT Connector",
+    start:    "Jun 23, 2026",
+    end:      "Jul 31, 2026",
+    details:  "Receive 17.5% commission on select new Workers' Compensation policies with EMPLOYERS® on RT Connector through July 31."
+  }
+];
+
+/* ================================================================
+   DISPLAY ENGINE — NO NEED TO EDIT BELOW THIS LINE
+================================================================ */
+
+document.getElementById('last-updated-display').textContent = 'Updated ' + LAST_UPDATED;
+
+const pillMap = {
+  active:   { cls: 'pill-active',   label: 'Active' },
+  ending:   { cls: 'pill-ending',   label: 'Ending soon' },
+  upcoming: { cls: 'pill-upcoming', label: 'Upcoming' }
+};
+
+let expandedSet = new Set();
+let currentFilter = 'all';
+
+function buildCard(c, idx) {
+  const p = pillMap[c.status] || pillMap.active;
+  const isExpanded = expandedSet.has(idx);
+
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  card.innerHTML = `
+    <div class="card-head">
+      <span class="carrier">${c.carrier}</span>
+      <span class="pill ${p.cls}">${p.label}</span>
+    </div>
+    <div class="prize-box">
+      <div class="prize-label">Prize</div>
+      <div class="prize-value">${c.prize}</div>
+    </div>
+    <div class="lob-box">
+      <span class="lob-label">LOB</span>
+      <span class="lob-value">${c.lob}</span>
+    </div>
+    <div class="meta">
+      <div class="meta-item"><i class="ti ti-calendar-event" aria-hidden="true"></i>${c.start}</div>
+      <div class="meta-item"><i class="ti ti-flag" aria-hidden="true"></i>${c.end}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="details-block">
+      <div class="details-label">Details</div>
+      <div class="details-text ${isExpanded ? '' : 'clamped'}">${c.details}</div>
+      <button class="expand-btn" data-idx="${idx}">${isExpanded ? 'Show less ↑' : 'Show full details ↓'}</button>
+    </div>
+  `;
+
+  card.querySelector('.expand-btn').addEventListener('click', function() {
+    const i = parseInt(this.dataset.idx);
+    if (expandedSet.has(i)) expandedSet.delete(i); else expandedSet.add(i);
+    render();
+  });
+
+  return card;
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  const label = document.getElementById('count-label');
+  grid.innerHTML = '';
+
+  const filtered = currentFilter === 'all'
+    ? contests
+    : contests.filter(c => c.status === currentFilter);
+
+  label.textContent = filtered.length + ' contest' + (filtered.length !== 1 ? 's' : '');
+
+  if (filtered.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = 'No contests in this category right now.';
+    grid.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach((c) => {
+    const globalIdx = contests.indexOf(c);
+    grid.appendChild(buildCard(c, globalIdx));
+  });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentFilter = this.dataset.filter;
+    render();
+  });
+});
+
+render();
+</script>
+</body>
+</html>
